@@ -1,0 +1,38 @@
+query RunInput {
+  cart {
+    lines {
+      id
+      quantity
+      bundleId: attribute(key: "_bundleId") {
+        value
+      }
+      pickupCharge: attribute(key: "Pickup Charges") {
+        value
+      }
+      cost {
+        totalAmount {
+          amount
+        }
+      }
+      merchandise {
+        ... on ProductVariant {
+          id
+          product {
+            title
+          }
+        }
+      }
+    }
+  }
+  shop {
+    fixedCharge: metafield(namespace: "shipping_settings", key: "fixed_charge") {
+      value
+    }
+    percentageCharge: metafield(namespace: "shipping_settings", key: "percentage_charge") {
+      value
+    }
+    threshold: metafield(namespace: "shipping_settings", key: "threshold") {
+      value
+    }
+  }
+}

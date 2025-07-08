@@ -1,0 +1,128 @@
+{% if block.settings.enable_pickup %}
+{% style %}
+  .line-item-property__field {
+    display: flex;
+    flex-direction: column;
+    max-width: 30rem;
+    width: 100%;
+    margin: 10px auto;
+  }
+
+  /* Hide default checkbox */
+  .pickup-option input[type="checkbox"] {
+    display: none;
+  }
+
+  /* Box style */
+  .pickup-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1px solid #000000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+  }
+
+  /* Checked effect using :has() if browser supports */
+  .pickup-option:has(input[type="checkbox"]:checked) {
+    border-color: #0077ff;
+    box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);
+  }
+  
+  /* For older browsers — add class via JS as fallback */
+  .pickup-option.checked {
+    border-color: #0077ff;
+    box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);
+  }
+
+  .pickup-option::before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border: 1px solid black;
+      display: inline-block;
+      flex-shrink: 0;
+      background-color: #fff;
+  }
+
+  .pickup-option:has(input[type="checkbox"]:checked)::before {
+    background-color: #0077ff;
+    border-color: #0077ff;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='10' viewBox='0 0 12 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5L4 8L11 1' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .pickup-option img {
+      object-fit: contain;
+  }
+
+  .pickup-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000000;
+  }
+
+{% endstyle %}
+<div class="line-item-property__field">
+  <label class="pickup-option">
+    <input type="hidden"  name="properties[Pickup Charges]" value="Yes">
+
+    <input id="pickup-charge" type="checkbox" name="properties[_bundleId]" value="Pickup" />
+    {% if block.settings.pickup_image != blank %}
+        <img 
+        src="{{ block.settings.pickup_image | image_url: width: 24, height: 24 }}" 
+        width="24" height="24" alt="Pickup Icon" 
+        />
+    {% else %}
+      <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" 
+      alt="Pickup" 
+      width="24" 
+      height="24"
+      loading="lazy"
+     />
+    {% endif %}
+    <span class="pickup-text">{{ block.settings.pickup_label }}</span>
+  </label>
+</div>
+<script>
+  const checkbox = document.getElementById("pickup-charge");
+  const label = checkbox.closest(".pickup-option");
+
+  checkbox.addEventListener("change", () => {
+    label.classList.toggle("checked", checkbox.checked);
+  });
+</script>
+
+{% endif %}
+  
+{% schema %}
+{
+  "name": "Pickup Charges Block",
+  "target": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_pickup",
+      "label": "Enable Pickup Charges Section",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "pickup_image",
+      "label": "Pickup Icon"
+    },
+    {
+      "type": "text",
+      "id": "pickup_label",
+      "label": "Pickup Label",
+      "default": "Pickup Charges"
+    }
+  ]
+}
+{% endschema %}

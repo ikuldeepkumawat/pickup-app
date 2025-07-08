@@ -1,0 +1,164 @@
+{% if block.settings.enable_pickup %}
+{% style %}
+.pickup-charges {
+  max-width: 36rem;
+  margin: 20px 0;
+}
+
+.pickup-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid #000000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    user-select: none;
+}
+
+.pickup-option.active {
+  border-color: #0077ff;
+  box-shadow: 0 0 8px rgba(0, 119, 255, 0.3);
+}
+
+.pickup-option img {
+  object-fit: contain;
+}
+
+.pickup-option span {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.pickup-confirm {
+  margin-top: 10px;
+  color: green;
+  font-weight: 500;
+  display: none;
+}
+/* Pickup Price Css here */
+.pickup-summary {
+    border: 1px solid #000000;
+    padding: 20px;
+    max-width: 500px;
+}
+
+.pickup-line {
+    font-size: 15px;
+    color: #000000;
+    margin: 5px 0;
+}
+
+.pickup-subtotal {
+  color: #000000;
+}
+
+.pickup-charge {
+  color: #e67e22;
+}
+
+.pickup-divider {
+  margin: 10px 0;
+  border-top: 1px dashed #aaa;
+}
+
+.pickup-total {
+    font-size: 16px;
+    font-weight: bold;
+    color: #27ae60;
+    margin: 0;
+}
+
+{% endstyle %}
+{% assign grand_difference = 0 %}
+
+{% for item in cart.items %}
+  {% assign variant_total = item.variant.price | times: item.quantity %}
+  {% assign line_total = item.final_line_price %}
+  {% assign difference = line_total | minus: variant_total %}
+  {% assign grand_difference = grand_difference | plus: difference %}
+  {% assign variant_price_total = variant_price_total | plus: variant_total %}
+
+  {% assign total = total | plus: line_total %}
+{% endfor %}
+<div class="pickup-summary">
+  <p class="pickup-line">
+    <strong>Product Subtotal (without Pickup):</strong>
+    <span class="pickup-subtotal">{{ variant_price_total | money }}</span>
+  </p>
+
+  <p class="pickup-line">
+    <strong>Pickup Charges Added:</strong>
+    <span class="pickup-charge">+ {{ grand_difference | money }}</span>
+  </p>
+
+  <hr class="pickup-divider">
+
+  <p class="pickup-total">
+    <strong>Total Payable:</strong> {{ total | money }}
+  </p>
+</div>
+
+<div class="pickup-charges">
+  <div class="pickup-option" id="pickup-toggle" onclick="togglePickupCharges()">
+    {% if block.settings.pickup_image != blank %}
+    <img 
+      src="{{ block.settings.pickup_image | image_url: width: 30, height: 30 }}"
+      alt="Pickup" 
+      width="30" 
+      height="30"
+      loading="lazy"
+    />
+  {% else %}
+    <img 
+      src="https://cdn-icons-png.flaticon.com/512/684/684908.png"
+      alt="Pickup" 
+      width="30" 
+      height="30"
+      loading="lazy"
+    />
+  {% endif %}
+    <span>{{ block.settings.pickup_label }}</span>
+  </div>
+  <p class="pickup-confirm" id="pickup-msg">{{ block.settings.success_message }}</p>
+</div>
+
+<script src="{{ 'script.js' | asset_url }}" defer="defer"></script>
+
+{% endif %}
+{% schema %}
+{
+  "name": "Pickup Charges Cart",
+  "target": "section",
+  "enabled_on": {
+      "templates": ["cart"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_pickup",
+      "label": "Enable Pickup Charges Section",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "pickup_image",
+      "label": "Pickup Icon",
+    },
+    {
+      "type": "text",
+      "id": "pickup_label",
+      "label": "Pickup Label",
+      "default": "Pickup Charges"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Pickup charges updated!"
+    }
+  ]
+}
+{% endschema %}
