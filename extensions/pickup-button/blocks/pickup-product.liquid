@@ -66,11 +66,13 @@
   }
 
 {% endstyle %}
+{%- assign product_form_id = 'product-form-' | append: section.id -%}
 <div class="line-item-property__field">
+  
   <label class="pickup-option">
-    <input type="hidden"  name="properties[Pickup Charges]" value="Yes">
+    <input type="hidden"  name="properties[_Pickup Charges]" value="Yes" form="{{ product_form_id }}">
 
-    <input id="pickup-charge" type="checkbox" name="properties[_bundleId]" value="Pickup" />
+    <input id="pickup-charge" type="checkbox" name="properties[_bundleId]" value="Pickup" form="{{ product_form_id }}" />
     {% if block.settings.pickup_image != blank %}
         <img 
         src="{{ block.settings.pickup_image | image_url: width: 24, height: 24 }}" 

@@ -4,7 +4,7 @@ let pickupEnabled = false;
     try {
       const cart = await fetch('/cart.js').then(res => res.json());
       const hasPickup = cart.items.some(item =>
-        item.properties && item.properties['Pickup Charges'] === 'Yes'
+        item.properties && item.properties['_Pickup Charges'] === 'Yes'
       );
 
       if (hasPickup) {
@@ -39,7 +39,7 @@ let pickupEnabled = false;
               quantity: item.quantity,
               properties: {
                 '_bundleId': 'Pickup',
-                'Pickup Charges': 'Yes'
+                '_Pickup Charges': 'Yes'
               }
             })
           });

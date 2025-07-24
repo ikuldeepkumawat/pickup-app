@@ -6,7 +6,7 @@ query RunInput {
       bundleId: attribute(key: "_bundleId") {
         value
       }
-      pickupCharge: attribute(key: "Pickup Charges") {
+      pickupCharge: attribute(key: "_Pickup Charges") {
         value
       }
       cost {

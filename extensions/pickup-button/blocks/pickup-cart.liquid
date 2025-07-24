@@ -73,17 +73,18 @@
 
 {% endstyle %}
 {% assign grand_difference = 0 %}
-
 {% for item in cart.items %}
-  {% assign variant_total = item.variant.price | times: item.quantity %}
-  {% assign line_total = item.final_line_price %}
-  {% assign difference = line_total | minus: variant_total %}
-  {% assign grand_difference = grand_difference | plus: difference %}
-  {% assign variant_price_total = variant_price_total | plus: variant_total %}
-
-  {% assign total = total | plus: line_total %}
+  {%- 
+    liquid
+      assign variant_total = item.variant.price | times: item.quantity
+      assign line_total = item.final_line_price
+      assign difference = line_total | minus: variant_total
+      assign grand_difference = grand_difference | plus: difference
+      assign variant_price_total = variant_price_total | plus: variant_total
+      assign total = total | plus: line_total
+  -%}
 {% endfor %}
-<div class="pickup-summary">
+<div class="pickup-summary js-contents-update">
   <p class="pickup-line">
     <strong>Product Subtotal (without Pickup):</strong>
     <span class="pickup-subtotal">{{ variant_price_total | money }}</span>
@@ -126,7 +127,6 @@
 </div>
 
 <script src="{{ 'script.js' | asset_url }}" defer="defer"></script>
-
 {% endif %}
 {% schema %}
 {

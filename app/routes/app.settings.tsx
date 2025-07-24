@@ -20,7 +20,7 @@ import { authenticate } from "../shopify.server";
 import { useState, useCallback, useEffect } from "react";
 
 // Define types for settings
-interface ShippingSettings {
+interface PickupSettings {
   threshold: number;
   fixedCharge: number;
   percentageCharge: number;
@@ -28,7 +28,7 @@ interface ShippingSettings {
 
 // Define loader response type
 interface LoaderData {
-  settings: ShippingSettings;
+  settings: PickupSettings;
   shopId: string;
   error?: string;
 }
@@ -50,7 +50,7 @@ export const loader = async ({ request }: LoaderFunctionArgs): Promise<ReturnTyp
       query getShopMetafields {
         shop {
           id
-          metafields(first: 3, namespace: "shipping_settings") {
+          metafields(first: 3, namespace: "Pickup_settings") {
             edges {
               node {
                 id
@@ -70,14 +70,14 @@ export const loader = async ({ request }: LoaderFunctionArgs): Promise<ReturnTyp
     const metafields = responseJson.data.shop.metafields.edges;
 
     // Default settings
-    const defaultSettings: ShippingSettings = {
+    const defaultSettings: PickupSettings = {
       threshold: 500,
       fixedCharge: 15,
       percentageCharge: 4,
     };
 
     // Parse metafields into settings
-    const settings: ShippingSettings = metafields.reduce(
+    const settings: PickupSettings = metafields.reduce(
       (acc:any, { node }: { node: { key: string; value: string } }) => {
         if (node.key === "threshold") {
           acc.threshold = parseFloat(node.value) || defaultSettings.threshold;
@@ -148,21 +148,21 @@ export const action = async ({ request }: ActionFunctionArgs): Promise<ReturnTyp
       {
         key: "threshold",
         value: threshold.toString(),
-        namespace: "shipping_settings",
+        namespace: "Pickup_settings",
         type: "number_decimal",
         ownerId: shopId,
       },
       {
         key: "fixed_charge",
         value: fixedCharge.toString(),
-        namespace: "shipping_settings",
+        namespace: "Pickup_settings",
         type: "number_decimal",
         ownerId: shopId,
       },
       {
         key: "percentage_charge",
         value: percentageCharge.toString(),
-        namespace: "shipping_settings",
+        namespace: "Pickup_settings",
         type: "number_decimal",
         ownerId: shopId,
       },
@@ -255,14 +255,14 @@ export default function SettingsPage() {
 
   return (
     <Frame>
-      <Page>
+      <Page fullWidth>
         <TitleBar title="Settings page" />
         <Layout>
           <Layout.Section>
             <Card>
               <BlockStack gap="300">
                 <Text as="h2" variant="headingMd">
-                  Shipping Settings
+                  Pickup Settings
                 </Text>
                 {loaderError && (
                   <Text as="p" tone="critical">
@@ -277,7 +277,7 @@ export default function SettingsPage() {
                       value={formData.threshold}
                       onChange={handleChange("threshold")}
                       prefix="$"
-                      helpText="Minimum order amount for shipping calculations"
+                      helpText="Minimum order amount for Pickup calculations"
                       error={actionData?.errors?.find((e) => e.field === "threshold")?.message}
                       autoComplete="off"
                     />
@@ -287,7 +287,7 @@ export default function SettingsPage() {
                       value={formData.fixedCharge}
                       onChange={handleChange("fixedCharge")}
                       prefix="$"
-                      helpText="Base shipping charge"
+                      helpText="Base Pickup charge"
                       error={actionData?.errors?.find((e) => e.field === "fixed_charge")?.message}
                       autoComplete="off"
                     />
@@ -303,8 +303,9 @@ export default function SettingsPage() {
                     />
                     <Button
                       submit
+                      variant="primary"
                       loading={navigation.state === "submitting"}
-                      accessibilityLabel="Save shipping settings"
+                      accessibilityLabel="Save Pickup settings"
                     >
                       Save Settings
                     </Button>
